@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>우리 가족 육아 핸드북 | 24년 5월생 첫째 &amp; 26년 9월생 둘째 맞춤 가이드</title>
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="육아핸드북" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -79,6 +87,9 @@
             둘째 아들 (2개월)
           </button>
         </div>
+        <button id="pwaInstallBtn" type="button" class="hidden inline-flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm">
+          📲 앱으로 설치
+        </button>
         <button id="openSyncModalBtn" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition">
           <span id="syncStatusDot" class="w-2 h-2 rounded-full bg-slate-400"></span>
           <span id="syncStatusText">부부 실시간 동기화</span>
@@ -3484,7 +3495,31 @@
               try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
               } catch (e) {}
-              renderAll();
+              // PWA Service Worker & Install Prompt
+      let deferredInstallPrompt = null;
+      const pwaInstallBtn = document.getElementById("pwaInstallBtn");
+      if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      }
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        if (pwaInstallBtn) pwaInstallBtn.classList.remove("hidden");
+      });
+      if (pwaInstallBtn) {
+        pwaInstallBtn.addEventListener("click", async () => {
+          if (!deferredInstallPrompt) return;
+          deferredInstallPrompt.prompt();
+          const { outcome } = await deferredInstallPrompt.userChoice;
+          if (outcome === "accepted") {
+            pwaInstallBtn.classList.add("hidden");
+            showToast("앱 설치가 시작되었습니다!");
+          }
+          deferredInstallPrompt = null;
+        });
+      }
+
+      renderAll();
               isApplyingRemoteSync = false;
             }
           } else {
