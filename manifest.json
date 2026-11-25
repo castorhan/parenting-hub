@@ -1,13 +1,13 @@
 {
   "name": "우리 가족 육아 핸드북",
   "short_name": "육아핸드북",
-  "description": "첫째(30개월) · 둘째(2개월) 맞춤 발달, 백분위 판독, 백과사전 42선, 이유식·유아식 레시피 26종",
+  "description": "두 아이 생일 기준 발달 로드맵 · 접종·검진 · 성장·수유·수면 기록 · 응급 카드 · 이유식·유아식 레시피",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f8fafc",
-  "theme_color": "#0f172a",
+  "background_color": "#F2F4F7",
+  "theme_color": "#F2F4F7",
   "icons": [
     {
       "src": "./icon-192.png",
